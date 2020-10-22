@@ -3,4 +3,14 @@
     apt: name=mysql-server
          update_cache=yes
          state=latest
+  - name: create database called 'wordpress'
+    community.mysql.mysql_db:
+      name: wordpres
+      state: present
+  - name: create db user with all privileges
+    community.mysql.mysql_user:
+      name: wordpressuser
+      password: password
+      priv: '*.*:ALL,GRANT'
+      state: present
 # tasks file for mysql
