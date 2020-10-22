@@ -1,2 +1,13 @@
 ---
+- name: move conf file to sites-available dir
+  copy:
+    src: files/wordpress.conf
+    dest: /etc/apache2/sites-available/wordpress.conf
+- name: create wordpress dir
+  file:
+    path: /var/www/wordpress
+    state: directory
+    owner: www-data
+    group: www-data
+    mode: 0775
 # tasks file for wordpress
