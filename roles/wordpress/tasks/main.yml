@@ -3,11 +3,35 @@
   copy:
     src: files/wordpress.conf
     dest: /etc/apache2/sites-available/wordpress.conf
-- name: create wordpress dir
+- name: download and unpack wp
+  unarchive:
+    src: https://wordpress.org/latest.tar.gz
+    dest: "/var/www/"
+    remote_src: yes
+    creates: "/var/www/wordpress"
+- name: cp wp-config.php
+  template:
+    src: files/wp-config.php
+    dest: /var/www/wordpress/wp-config.php
+- name: set rights for wordpress folder
   file:
-    path: /var/www/wordpress
-    state: directory
-    owner: www-data
-    group: www-data
-    mode: 0775
+   path: /var/www/wordpress
+   state: directory
+   recurse: yes
+   owner: www-data
+   group: www-data
+- name: correct rights for dirs
+  command: find /var/www/wordpress/ -type d -exec chmod 750 {} \;
+- name: correct right for files
+  command: find /var/www/wordpress/ -type f -exec chmod 640 {} \;
+- name: enable site
+  command: a2ensite wordpress
+- name: disable default site
+  command: a2dissite 000-default
+- name: enable rewrite mod
+  command: a2enmod rewrite
+- name: restart apache
+  service:
+    name: apache2
+    state: restarted
 # tasks file for wordpress
